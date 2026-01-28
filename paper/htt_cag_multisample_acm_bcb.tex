@@ -1,0 +1,201 @@
+\documentclass[sigconf]{acmart}
+
+% Remove ACM reference footers and default conference metadata for a cleaner draft.
+\settopmatter{printacmref=false, printccs=false, printfolios=false}
+\renewcommand\footnotetextcopyrightpermission[1]{}
+\acmConference{}{}{}
+\acmBooktitle{}
+\acmYear{}
+\acmISBN{}
+\acmDOI{}
+\acmPrice{}
+
+% Tighter number-to-title spacing and clearer size hierarchy for headings.
+\makeatletter
+\def\@seccntformat#1{\csname the#1\endcsname.\hspace{0.4em}}
+\renewcommand\section{\@startsection{section}{1}{\z@}%
+  {-1.6ex plus -0.4ex minus -0.2ex}%
+  {0.9ex plus 0.2ex}%
+  {\normalfont\large\bfseries}}
+\renewcommand\subsection{\@startsection{subsection}{2}{\z@}%
+  {-1.3ex plus -0.4ex minus -0.2ex}%
+  {0.7ex plus 0.2ex}%
+  {\normalfont\normalsize\bfseries}}
+\renewcommand\subsubsection{\@startsection{subsubsection}{3}{\z@}%
+  {-1.1ex plus -0.3ex minus -0.2ex}%
+  {0.6ex plus 0.2ex}%
+  {\normalfont\small\bfseries}}
+\makeatother
+
+\title{Multi-sample Evaluation of Signal-Level STR Counting on HTT CAG Ground-Truth Samples}
+
+\author{Jeff Kimingi Karanja}
+\affiliation{%
+  \institution{Warsaw University of Technology}
+  \city{Warsaw}
+  \state{Masovian Voivodeship}
+  \country{Poland}
+}
+\email{jeff.kimingi.karanja@stud.edu.pl}
+
+\author{Wiktor Ku\'smirek}
+\affiliation{%
+  \institution{Warsaw University of Technology}
+  \city{Warsaw}
+  \state{Masovian Voivodeship}
+  \country{Poland}
+}
+\email{Wiktor.Kusmirek@pw.edu.pl}
+
+\begin{abstract}
+We evaluate signal-level STR counting across nine Huntington's disease (HTT CAG) samples with published ground truth, comparing WarpSTR, DeepRepeat, and STRique. WarpSTR allele peaks align closely with ground truth (mean absolute error: 0.56 repeats long, 0.89 short) when peak lengths are converted to repeats by bp/3 and rounded. Basecall-derived peaks are less accurate (mean absolute error: 1.56 long, 2.22 short). STRique outputs counts for all nine samples but shows higher error (mean absolute error: 1.89 long, 1.44 short) and a tendency to overestimate the long allele. DeepRepeat does not emit repeat counts; log-derived GMM peaks miss a clear short-allele mode in 5/9 samples despite strong allocation evidence. We use these results to identify improvement targets: repeat-unit calibration, boundary detection, and confidence-aware allele clustering.
+\end{abstract}
+
+\keywords{STRs, Huntington's disease, nanopore, signal processing, repeat counting}
+
+\begin{CCSXML}
+<ccs2012>
+ <concept>
+  <concept_id>10010147.10010178.10010179</concept_id>
+  <concept_desc>Computing methodologies~Bioinformatics</concept_desc>
+  <concept_significance>500</concept_significance>
+ </concept>
+ <concept>
+  <concept_id>10002950.10003648.10003688</concept_id>
+  <concept_desc>Mathematics of computing~Biosequence analysis</concept_desc>
+  <concept_significance>300</concept_significance>
+ </concept>
+ <concept>
+  <concept_id>10010147.10010257</concept_id>
+  <concept_desc>Computing methodologies~Machine learning</concept_desc>
+  <concept_significance>100</concept_significance>
+ </concept>
+</ccs2012>
+\end{CCSXML}
+\ccsdesc[500]{Computing methodologies~Bioinformatics}
+\ccsdesc[300]{Mathematics of computing~Biosequence analysis}
+\ccsdesc[100]{Computing methodologies~Machine learning}
+
+\begin{document}
+\maketitle
+\pagestyle{fancy}
+\fancyhf{}
+\renewcommand{\headrulewidth}{0pt}
+
+\section{Introduction}
+Counting STRs from nanopore signal is like measuring how many tiles fit in a repeating floor pattern: if the boundary is placed a few tiles early or late, the count shifts even when the pattern is correct. This paper provides a multi-sample comparison of three signal-level STR methods against known HTT CAG labels, highlighting where methods agree with ground truth and where they diverge.
+
+Ground-truth allele sizes are taken from Supplementary Table S4 of Monteys et al.\ (2017).\cite{Monteys2017CRISPR} We compare WarpSTR, DeepRepeat, and STRique outputs from the current repository and summarize disagreements to guide algorithm improvement.
+
+\section{Related Work}
+STRique introduced direct signal-level analysis for STR expansions using nanopore current traces and demonstrated repeat detection and methylation profiling in long reads.\cite{Giesselmann2019STRique} DeepRepeat later proposed a deep learning pipeline that converts signal to a feature representation for repeat quantification from nanopore reads.\cite{Fang2022DeepRepeat} WarpSTR uses raw signal alignment with a finite-state repeat model and DTW-based scoring to estimate repeat lengths from nanopore data.\cite{Sitarcik2023WarpSTR} These tools represent distinct methodological families (signal alignment, deep learning, and probabilistic modeling), motivating a side-by-side comparison against ground-truth CAG repeat sizes.
+
+\section{Materials and Methods}
+\subsection{Samples and Ground Truth}
+Samples with published ground truth include GM04723, ND30015, ND30016, ND30047, ND30422, ND30626, ND31551, ND33392, and ND33947. Additional processed samples without published ground truth (ND29970, ND40534) are excluded from quantitative comparisons.
+
+\subsection{Inputs}
+We use raw FAST5 signal, a BAM alignment, and a reference genome. Per-sample configurations are stored in \path{ont-str-runner/configs/} and target the HTT CAG locus at \texttt{chr4:3074876-3074933} with motif \texttt{CAG}.
+
+\subsection{Tools}
+\begin{itemize}
+  \item \textbf{WarpSTR:} DTW alignment of signal to an expected repeat pattern with allele clustering.\cite{Sitarcik2023WarpSTR}
+  \item \textbf{DeepRepeat:} model-based signal classification to detect repeat regions and derive per-read outputs.\cite{Fang2022DeepRepeat}
+  \item \textbf{STRique:} signal-level STR counter using flanking sequences and a pore model.\cite{Giesselmann2019STRique}
+\end{itemize}
+
+\subsection{Evaluation Strategy}
+We compare allele estimates to the ground truth. For WarpSTR and basecall-derived peaks, we convert peak values to approximate repeat counts by dividing by 3 (CAG length) and rounding. For STRique, we filter per-read counts by removing zeros and extreme outliers ($>$200) before peak calling. For DeepRepeat, we parse GMM peaks and allocation histograms from \texttt{htt.log} and flag cases where a short-allele allocation peak exists but GMM peaks remain long-only.
+
+\section{Results}
+\subsection{Multi-sample comparison against ground truth}
+
+Across all nine labeled samples, WarpSTR has low error (MAE 0.56 repeats long, 0.89 short), while basecall-derived peaks are less accurate (MAE 1.56 long, 2.22 short). STRique reports counts for all nine samples but shows higher error (MAE 1.89 long, 1.44 short) and a tendency to overestimate the long allele.
+
+\begin{table*}[t]
+  \caption{Multi-sample HTT CAG allele comparison (published ground truth). WarpSTR/basecall repeats are approximated as bp/3, rounded.}
+  \label{tab:multisample}
+  \small
+  \centering
+  \setlength{\tabcolsep}{6pt}
+  \renewcommand{\arraystretch}{1.15}
+  \begin{tabular}{lcccc}
+    \toprule
+    Sample & Truth (L/S) & WarpSTR (L/S) & Basecall (L/S) & STRique (L/S) \\
+    \midrule
+    GM04723 & 72/17 & 70/15 & 67/18 & 72/16 \\
+    ND30015 & 41/20 & 42/21 & 40/24 & 43/22 \\
+    ND30016 & 41/21 & 41/21 & 40/23 & 43/22 \\
+    ND30047 & 41/18 & 41/19 & 40/21 & 43/20 \\
+    ND30422 & 40/18 & 40/18 & 39/20 & 41/19 \\
+    ND30626 & 41/21 & 41/17 & 40/17 & 43/18 \\
+    ND31551 & 39/18 & 41/18 & 40/18 & 43/19 \\
+    ND33392 & 57/17 & 57/17 & 55/19 & 59/18 \\
+    ND33947 & 40/18 & 40/18 & 39/20 & 42/19 \\
+    \bottomrule
+  \end{tabular}
+\end{table*}
+
+\subsection{DeepRepeat log-derived peaks}
+
+DeepRepeat logs do not include explicit repeat counts, so we parse GMM peaks and allocation histograms from \texttt{htt.log}. In 5/9 labeled samples, GMM peaks remain long-only even when a short-allele allocation peak is present (Table~\ref{tab:deeprepeat_missed_short}). This suggests a peak-selection weakness rather than missing signal.
+
+\begin{table}[t]
+  \caption{DeepRepeat GMM peak-selection misses where a short-allele allocation peak is present.}
+  \label{tab:deeprepeat_missed_short}
+  \footnotesize
+  \centering
+  \setlength{\tabcolsep}{4pt}
+  \begin{tabular}{lccc}
+    \toprule
+    Sample & Truth (CAG) & GMM peaks & \shortstack{Short-allele allocation\\(peak:count)} \\
+    \midrule
+    GM04723 & 72 / 17 & 67, 70 & 17:395 \\
+    ND30016 & 41 / 21 & 39, 42 & 23:203 \\
+    ND30047 & 41 / 18 & 40, 43 & 21:451 \\
+    ND30422 & 40 / 18 & 39, 41 & 20:352 \\
+    ND30626 & 41 / 21 & 40, 42 & 19:504 \\
+    \bottomrule
+  \end{tabular}
+\end{table}
+
+\section{Discussion}
+
+Across samples with ground truth, WarpSTR is the most accurate overall, but it still undercounts the short allele in ND30626. STRique emits repeat counts for every processed sample but shows higher error and a consistent long-allele overcount, suggesting a calibration or boundary bias. DeepRepeat's GMM misses short-allele modes in several samples despite clear allocation evidence, motivating confidence-aware clustering or explicit bimodality checks.
+
+\section{Opportunities for Improvement}
+\begin{enumerate}
+  \item \textbf{Repeat-unit calibration:} Convert signal or basecall lengths to repeat units with a validated scaling rule (e.g., bp/3 for CAG), then verify against ground truth.
+  \item \textbf{Boundary detection:} Use joint signal and sequence context to better locate repeat start/end, especially for short alleles.
+  \item \textbf{Confidence-aware clustering:} Cluster per-read counts into alleles using uncertainty (DTW cost or model confidence), not just raw counts.
+  \item \textbf{Strand and mapping robustness:} Reduce errors from reverse-complement reads and small mapping offsets.
+  \item \textbf{Output completeness:} Ensure repeat counts are emitted by default for downstream comparison.
+\end{enumerate}
+
+\section{Limitations}
+This is a single-locus analysis (HTT CAG). WarpSTR and basecall repeat counts are converted via a simple bp/3 rule; this assumes correct unit calibration and can introduce small rounding errors. DeepRepeat GMM peaks are parsed from logs rather than a dedicated output file, and allocation histograms are summarized with simple heuristics.
+
+\section{Conclusion}
+Across labeled HTT CAG samples, WarpSTR most closely matches ground truth, while basecall-derived peaks are less accurate. STRique returns repeat counts for every sample but tends to overestimate the long allele. DeepRepeat does not emit repeat counts and sometimes misses short-allele modes in its GMM peaks despite clear allocation evidence. The most impactful improvements are repeat-unit calibration, stronger boundary detection, and confidence-aware allele clustering.
+
+\section{Data and Artifacts}
+{\small
+\sloppy
+\begin{itemize}
+  \item WarpSTR allele summaries: \path{ont-str-runner/work/warpstr/<SAMPLE>/HTT_CAG/predictions/alleles.csv}
+  \item WarpSTR per-read calls: \path{ont-str-runner/work/warpstr/<SAMPLE>/HTT_CAG/overview.csv}
+  \item WarpSTR histograms: \path{ont-str-runner/work/warpstr/<SAMPLE>/HTT_CAG/summaries/alleles.svg}
+  \item DeepRepeat logs: \path{ont-str-runner/work/deeprepeat/<SAMPLE>/htt.log}
+  \item STRique counts: \path{ont-str-runner/work/strique/<SAMPLE>.txt}
+  \item Multi-sample comparison: \path{ont-str-runner/work/analysis/ground_truth_comparison.csv}
+\end{itemize}
+}
+
+\begin{acks}
+This work is part of the author's M.Sc. thesis at Warsaw University of Technology, supervised by Wiktor Ku\'smirek.
+\end{acks}
+
+\bibliographystyle{ACM-Reference-Format}
+\bibliography{paper/references}
+
+\end{document}

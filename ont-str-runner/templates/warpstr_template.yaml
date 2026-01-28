@@ -1,0 +1,29 @@
+# WarpSTR config template
+# Prefer using scripts/make_warpstr_config.sh to generate this file.
+
+reference_path: /abs/path/to/reference_genome.fa
+output: /abs/path/to/ont-str-runner/work/warpstr/<SAMPLE>
+threads: 12
+
+inputs:
+  - path: /abs/path/to/ont-str-runner/data
+    runs: <SAMPLE>
+
+single_read_extraction: True
+guppy_annotation: True
+exp_signal_generation: True
+tr_region_extraction: True
+tr_region_calling: True
+genotyping: True
+
+force_overwrite: True
+
+guppy_config:
+    path: /opt/ont/guppy/bin/guppy_basecaller
+    flowcell: FLO-MIN106
+    kit: SQK-LSK109
+
+loci:
+  - name: HTT_CAG
+    coord: chr4:3074876-3074933
+    motif: CAG

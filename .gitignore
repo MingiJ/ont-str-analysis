@@ -1,0 +1,23 @@
+extern/STRique/
+ont-str-runner/data/
+ont-str-runner/data_local/
+ont-str-runner/work/
+ont-str-runner/configs/warpstr_*.yaml
+!ont-str-runner/data/README.md
+models/trainedmod_32_0.2/
+
+# LaTeX build artifacts
+*.aux
+*.bbl
+*.blg
+*.fdb_latexmk
+*.fls
+*.log
+*.out
+*.synctex.gz
+comment.cut
+htt_cag_multisample_acm_bcb.pdf
+paper/htt_cag_multisample_acm_bcb.pdf
+
+# Local reference copies
+CRISPR Cas9 Editing.pdf

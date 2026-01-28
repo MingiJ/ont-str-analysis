@@ -1,0 +1,3 @@
+[submodule "extern/kmer_models"]
+	path = extern/kmer_models
+	url = https://github.com/nanoporetech/kmer_models.git
