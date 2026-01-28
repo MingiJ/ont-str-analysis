@@ -16,8 +16,6 @@ models/trainedmod_32_0.2/
 *.out
 *.synctex.gz
 comment.cut
-htt_cag_multisample_acm_bcb.pdf
-paper/htt_cag_multisample_acm_bcb.pdf
 
 # Local reference copies
 CRISPR Cas9 Editing.pdf

@@ -1,14 +1,16 @@
 \documentclass[sigconf]{acmart}
 
 % Remove ACM reference footers and default conference metadata for a cleaner draft.
-\settopmatter{printacmref=false, printccs=false, printfolios=false}
+\settopmatter{printacmref=true, printccs=false, printfolios=false}
 \renewcommand\footnotetextcopyrightpermission[1]{}
 \acmConference{}{}{}
 \acmBooktitle{}
 \acmYear{}
 \acmISBN{}
 \acmDOI{}
-\acmPrice{}
+\makeatletter
+\@ACM@balancefalse
+\makeatother
 
 % Tighter number-to-title spacing and clearer size hierarchy for headings.
 \makeatletter
@@ -26,6 +28,8 @@
   {0.6ex plus 0.2ex}%
   {\normalfont\small\bfseries}}
 \makeatother
+\setlength{\emergencystretch}{1em}
+\raggedbottom
 
 \title{Multi-sample Evaluation of Signal-Level STR Counting on HTT CAG Ground-Truth Samples}
 
@@ -95,7 +99,8 @@ STRique introduced direct signal-level analysis for STR expansions using nanopor
 Samples with published ground truth include GM04723, ND30015, ND30016, ND30047, ND30422, ND30626, ND31551, ND33392, and ND33947. Additional processed samples without published ground truth (ND29970, ND40534) are excluded from quantitative comparisons.
 
 \subsection{Inputs}
-We use raw FAST5 signal, a BAM alignment, and a reference genome. Per-sample configurations are stored in \path{ont-str-runner/configs/} and target the HTT CAG locus at \texttt{chr4:3074876-3074933} with motif \texttt{CAG}.
+{\raggedright
+We use raw FAST5 signal, a BAM alignment, and a reference genome. Per-sample configurations live in \path{ont-str-runner/configs/} and target the HTT CAG locus at \texttt{chr4:3074876-3074933} with motif \texttt{CAG}.\par}
 
 \subsection{Tools}
 \begin{itemize}
@@ -168,7 +173,7 @@ Across samples with ground truth, WarpSTR is the most accurate overall, but it s
   \item \textbf{Repeat-unit calibration:} Convert signal or basecall lengths to repeat units with a validated scaling rule (e.g., bp/3 for CAG), then verify against ground truth.
   \item \textbf{Boundary detection:} Use joint signal and sequence context to better locate repeat start/end, especially for short alleles.
   \item \textbf{Confidence-aware clustering:} Cluster per-read counts into alleles using uncertainty (DTW cost or model confidence), not just raw counts.
-  \item \textbf{Strand and mapping robustness:} Reduce errors from reverse-complement reads and small mapping offsets.
+  \item \textbf{Strand and mapping robustness:} Reduce errors from reverse complement reads and mapping offsets.
   \item \textbf{Output completeness:} Ensure repeat counts are emitted by default for downstream comparison.
 \end{enumerate}
 
@@ -176,12 +181,12 @@ Across samples with ground truth, WarpSTR is the most accurate overall, but it s
 This is a single-locus analysis (HTT CAG). WarpSTR and basecall repeat counts are converted via a simple bp/3 rule; this assumes correct unit calibration and can introduce small rounding errors. DeepRepeat GMM peaks are parsed from logs rather than a dedicated output file, and allocation histograms are summarized with simple heuristics.
 
 \section{Conclusion}
-Across labeled HTT CAG samples, WarpSTR most closely matches ground truth, while basecall-derived peaks are less accurate. STRique returns repeat counts for every sample but tends to overestimate the long allele. DeepRepeat does not emit repeat counts and sometimes misses short-allele modes in its GMM peaks despite clear allocation evidence. The most impactful improvements are repeat-unit calibration, stronger boundary detection, and confidence-aware allele clustering.
+Across labeled HTT CAG samples, WarpSTR most closely matches ground truth, while basecall peaks are less accurate. STRique returns repeat counts for every sample but tends to overestimate the long allele. DeepRepeat does not emit repeat counts and sometimes misses short-allele modes in its GMM peaks despite clear allocation evidence. The most impactful improvements are repeat-unit calibration, stronger boundary detection, and confidence-aware allele clustering.
 
 \section{Data and Artifacts}
 {\small
 \sloppy
-\begin{itemize}
+\begin{itemize}\raggedright
   \item WarpSTR allele summaries: \path{ont-str-runner/work/warpstr/<SAMPLE>/HTT_CAG/predictions/alleles.csv}
   \item WarpSTR per-read calls: \path{ont-str-runner/work/warpstr/<SAMPLE>/HTT_CAG/overview.csv}
   \item WarpSTR histograms: \path{ont-str-runner/work/warpstr/<SAMPLE>/HTT_CAG/summaries/alleles.svg}
