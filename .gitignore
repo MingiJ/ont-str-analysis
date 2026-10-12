@@ -6,6 +6,11 @@ ont-str-runner/configs/warpstr_*.yaml
 !ont-str-runner/data/README.md
 models/trainedmod_32_0.2/
 
+# Python caches
+.venv/
+__pycache__/
+*.py[cod]
+
 # LaTeX build artifacts
 *.aux
 *.bbl
@@ -19,3 +24,8 @@ comment.cut
 
 # Local reference copies
 CRISPR Cas9 Editing.pdf
+
+# Large downloaded toolchains and models (not source)
+tools/
+# Stray raw sequence data in repo root
+*.fastq

@@ -1,0 +1,13 @@
+sample	sra_accession	archive_url	truth_long	truth_short	status	include_primary
+GM04723	SRR13068470	https://sra-pub-src-2.s3.amazonaws.com/SRR13068470/GM04723.tar.gz.1	72	17	Mutant	1
+ND29970	SRR13068466	https://sra-pub-src-2.s3.amazonaws.com/SRR13068466/ND29970.tar.gz.1			Unlabeled	0
+ND30015	SRR13068465	https://sra-pub-src-2.s3.amazonaws.com/SRR13068465/ND30015.tar.gz.1	41	20	Mutant	1
+ND30016	SRR13068464	https://sra-pub-src-2.s3.amazonaws.com/SRR13068464/ND30016.tar.gz.1	41	21	Mutant	1
+ND30047	SRR13068463	https://sra-pub-src-2.s3.amazonaws.com/SRR13068463/ND30047.tar.gz.1	41	18	Mutant	1
+ND30422	SRR13068462	https://sra-pub-src-2.s3.amazonaws.com/SRR13068462/ND30422.tar.gz.1	40	18	Mutant	1
+ND30626	SRR13068461	https://sra-pub-src-2.s3.amazonaws.com/SRR13068461/ND30626.tar.gz.1	41	21	Mutant	1
+ND31551	SRR13068460	https://sra-pub-src-2.s3.amazonaws.com/SRR13068460/ND31551.tar.gz.1	39	18	Normal	1
+ND33392	SRR13068459	https://sra-pub-src-2.s3.amazonaws.com/SRR13068459/ND33392.tar.gz.1	57	17	Mutant	1
+ND33947	SRR13068468	https://sra-pub-src-2.s3.amazonaws.com/SRR13068468/ND33947.tar.gz.1	40	18	Mutant	1
+ND40534	SRR13068467	https://sra-pub-src-2.s3.amazonaws.com/SRR13068467/ND40534.tar.gz.1			Unlabeled	0
+NA12878	SRR13068469	https://sra-pub-src-2.s3.amazonaws.com/SRR13068469/NA12878.tar.gz.1			Unlabeled	0

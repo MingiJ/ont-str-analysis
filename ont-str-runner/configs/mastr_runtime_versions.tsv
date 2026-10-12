@@ -1,0 +1,8 @@
+component	version	source	sha256_or_pin	role
+dorado	0.7.3+6e6c45c	https://cdn.oxfordnanoportal.com/software/analysis/dorado-0.7.3-linux-x64.tar.gz	fae832f639aba397399ea36520fb207dd6c2b4c27204586332a99f9fc6114c4f	paper-era basecalling and move tables
+dorado_selection_model	dna_r9.4.1_e8_fast@v3.4	Dorado 0.7.3 model registry	content-manifest SHA-256 f0d2494458f72c3f38463d1b5c85d7259134bdb120ec7de104f9f7cb0a65189d	truth-free raw UUID/barcode/locus selection only
+dorado_primary_model	dna_r9.4.1_e8_sup@v3.6	Dorado 0.7.3 model registry	content-manifest SHA-256 c420bed20573a2d000e437a65996dfc0625834de178d0d58196744aaa81d9ae0	frozen confirmatory signal boundaries
+raw_run_metadata	FLO-MIN106 / sqk-lsk109 / 4000 Hz	FAW16852.pod5 run_info	acquisition_id ad967a82ca8a05f4dce1a2ce59d3e13ae6357820	definitive R9.4.1 chemistry audit
+raw_uuid_screen	15000 of 91869 POD5 UUIDs	SHA-256 rank	seed mastr-raw-screen-v1	truth-free compute cap before FAST barcode/locus selection
+pod5	0.3.44	https://pypi.org/project/pod5/0.3.44/	pod5==0.3.44	read-only raw signal extraction
+sratoolkit	3.4.1	https://ftp-trace.ncbi.nlm.nih.gov/sra/sdk/current/sratoolkit.current-ubuntu64.tar.gz	b950362c054765a4184af41947f022f040e94e964862017c0ecb0b0273db3596	confirmed SRA spot names cannot recover POD5 UUIDs

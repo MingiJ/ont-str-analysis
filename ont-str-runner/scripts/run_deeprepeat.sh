@@ -25,7 +25,7 @@ OUT_DIR="$ROOT/work/deeprepeat/$SAMPLE"
 LOG="$OUT_DIR/${REPEAT_NAME}.log"
 RPG=${RPG:-/app/data/wg_trf.cag.bed}
 MODEL_DIR=${DEEPREPEAT_MODEL_DIR:-$ROOT/models/trainedmod_32_0.2}
-MODEL_DIR=$(python - <<'PY' "$MODEL_DIR"
+MODEL_DIR=$(python3 - <<'PY' "$MODEL_DIR"
 import os, sys
 print(os.path.abspath(sys.argv[1]))
 PY
@@ -63,7 +63,7 @@ fi
 
 # Validate f5index entries against current FAST5 folder; filter missing entries if needed.
 FILTERED_F5INDEX="$OUT_DIR/${REPEAT_NAME}.f5index.filtered"
-F5_STATS=$(python - <<'PY' "$F5INDEX" "$DATA_DIR" "$FILTERED_F5INDEX"
+F5_STATS=$(python3 - <<'PY' "$F5INDEX" "$DATA_DIR" "$FILTERED_F5INDEX"
 import sys
 from pathlib import Path
 
@@ -126,7 +126,7 @@ if [[ ("${F5_MISSING:-0}" -gt 0 || "${F5_EXTRA:-0}" -gt 0) && "${DEEPR_INDEX_FAL
       echo "Using rebuilt f5index: $REBUILT_F5INDEX"
       F5INDEX="$REBUILT_F5INDEX"
       # Recompute index stats after rebuild so messaging is accurate.
-      F5_STATS=$(python - <<'PY' "$F5INDEX" "$DATA_DIR" "$FILTERED_F5INDEX"
+      F5_STATS=$(python3 - <<'PY' "$F5INDEX" "$DATA_DIR" "$FILTERED_F5INDEX"
 import sys
 from pathlib import Path
 
@@ -198,7 +198,7 @@ fi
 # Option 2: filter BAM to reads present in f5index to avoid missing read_id errors.
 if [[ "${DEEPR_FILTER_BAM}" -eq 1 ]]; then
   READ_IDS_FILE="$OUT_DIR/${REPEAT_NAME}.read_ids.txt"
-  python - <<'PY' "$F5INDEX" "$READ_IDS_FILE"
+  python3 - <<'PY' "$F5INDEX" "$READ_IDS_FILE"
 import sys
 
 f5index = sys.argv[1]

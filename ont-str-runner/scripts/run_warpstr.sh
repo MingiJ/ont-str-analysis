@@ -22,7 +22,13 @@ if [[ ! -f "$CONFIG" ]]; then
     exit 1
   fi
 fi
-REF_PATH="$(rg '^reference_path:' "$CONFIG" | head -1 | sed 's/reference_path:[[:space:]]*//')"
+REF_PATH=""
+while IFS= read -r line; do
+  if [[ "$line" =~ ^reference_path:[[:space:]]*(.*)$ ]]; then
+    REF_PATH="${BASH_REMATCH[1]}"
+    break
+  fi
+done < "$CONFIG"
 REF_DIR=""
 if [[ -n "$REF_PATH" ]]; then
   REF_DIR="$(dirname "$REF_PATH")"

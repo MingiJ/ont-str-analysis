@@ -6,6 +6,7 @@ REF_FASTA=${2:-}
 DATA_ROOT=${3:-}
 OUT_DIR=${4:-}
 THREADS=${WARPSTR_THREADS:-12}
+VISUALIZE_ALIGNMENT=${WARPSTR_VISUALIZE_ALIGNMENT:-False}
 
 if [[ -z "$SAMPLE" || -z "$REF_FASTA" ]]; then
   echo "Usage: $0 <SAMPLE> <REFERENCE_FASTA> [DATA_ROOT] [OUT_DIR]" >&2
@@ -17,7 +18,7 @@ DATA_ROOT=${DATA_ROOT:-"$ROOT/data"}
 OUT_DIR=${OUT_DIR:-"$ROOT/work/warpstr/$SAMPLE"}
 
 abspath() {
-  python - <<'PY' "$1"
+  python3 - <<'PY' "$1"
 import os, sys
 print(os.path.abspath(sys.argv[1]))
 PY
@@ -54,6 +55,9 @@ tr_region_calling: True
 genotyping: True
 
 force_overwrite: True
+
+tr_calling_config:
+    visualize_alignment: ${VISUALIZE_ALIGNMENT}
 
 guppy_config:
     path: /opt/ont/guppy/bin/guppy_basecaller

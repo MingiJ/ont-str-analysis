@@ -50,6 +50,40 @@ bash scripts/run_deeprepeat.sh <SAMPLE> HTT_CAG chr4:3074876-3074933 CAG
 bash scripts/run_strique.sh <SAMPLE>
 ```
 
+For strict thesis reruns on a multi-core workstation:
+```bash
+REFERENCE_FASTA=/abs/path/to/reference_genome.fa \
+DEEPREPEAT_MODEL_DIR=/abs/path/to/trainedmod_32_0.2 \
+WARPSTR_JOBS=1 WARPSTR_THREADS=16 DEEPREPEAT_JOBS=2 STRIQUE_JOBS=2 RUN_STRIQUE=1 \
+  bash scripts/run_truth_benchmarks_optimized.sh
+```
+
+## Final truth-sample benchmark
+
+The final published-ground-truth HTT CAG benchmark completed on 2026-06-05:
+
+- WarpSTR complete: 9/9 samples
+- DeepRepeat complete: 9/9 samples
+- STRique complete: 9/9 samples
+- Failure/incomplete records: 0
+
+Final result files:
+
+```text
+work/analysis/ground_truth_comparison.csv
+work/analysis/benchmark_report.md
+work/analysis/benchmark_failures.tsv
+```
+
+Plain-English takeaway: WarpSTR is strongest overall, STRique completes every
+sample but overestimates more often, and DeepRepeat has useful
+signal/allocation evidence but weak GMM peak selection for short alleles.
+
+By default, generated WarpSTR configs disable per-read DTW alignment PNGs
+(`tr_calling_config.visualize_alignment: False`) because they are slow and not
+needed for the thesis benchmark table. Set `WARPSTR_VISUALIZE_ALIGNMENT=True`
+when debugging individual reads.
+
 If your STRique pore model differs, override it:
 ```bash
 STRIQUE_MODEL=/app/models/<MODEL>.model bash scripts/run_strique.sh <SAMPLE>
@@ -60,6 +94,9 @@ STRIQUE_MODEL=/app/models/<MODEL>.model bash scripts/run_strique.sh <SAMPLE>
 - `REFERENCE_FASTA` — reference FASTA path (used to auto-generate WarpSTR configs)
 - `DEEPREPEAT_MODEL_DIR` — DeepRepeat model directory (default: `models/trainedmod_32_0.2`)
 - `RUN_STRIQUE=1` — when set, `run_all_htt_samples.sh` will also run STRique
+- `WARPSTR_THREADS`, `WARPSTR_JOBS`, `DEEPREPEAT_JOBS`, `STRIQUE_JOBS` — optimized benchmark runner controls
+- `WARPSTR_VISUALIZE_ALIGNMENT` — set to `True` to write per-read WarpSTR DTW alignment PNGs; default is `False`
+- `SKIP_COMPLETED=1` — optimized benchmark runner resumes from strict completed outputs; use with `FRESH_OUTPUTS=0`
 
 ## Batch STRique on VM (native, sequential downloads)
 For low-disk VMs, use the batch script to download one sample at a time,
