@@ -267,3 +267,30 @@ trusted genotype.
 **External confirmation (Coriell, MASTR)** — extra cohorts of different chemistry
 used to test whether the method transfers. Both frozen; MASTR failed its
 pre-declared accuracy gate. They're transfer tests, not clinical validation.
+
+
+## 7. Data repositories and modern tools (added 2026-10-13)
+
+**SRA (Sequence Read Archive)** — NCBI's (US) public repository for raw
+sequencing data. Where our datasets were searched/obtained.
+
+**ENA (European Nucleotide Archive)** — EMBL-EBI's (Europe) equivalent; mirrors
+SRA (both are part of the INSDC). Submit to one, it appears in both.
+
+**sra-pub-src buckets** — SRA's "original-submission" S3 storage. Raw nanopore
+signal (FAST5 tars) often lives here even when ENA's file view shows only
+basecalled reads. Check a run for raw signal with:
+`curl -s "https://locate.ncbi.nlm.nih.gov/sdl/2/retrieve?acc=<SRR>" | grep type`
+-> a `nanopore`/`fast5`/`pod5`/`.tar` entry means raw signal exists; only `sra`
+means basecalled reads only.
+
+**Modern basecalled-read STR callers** (the current mainstream, for context):
+STRkit (uses nearby SNVs; best on HiFi/short alleles), TRGT (PacBio-only;
+methylation+mosaicism), LongTR & ATaRVa (most robust on Nanopore incl. large
+alleles), vamos, STRdust, Medaka Tandem. See `docs/LITERATURE_REVIEW.md`.
+
+**Somatic mosaicism** — the repeat length differs cell-to-cell within one person
+(large in HD neurons). An open problem most tools don't handle.
+
+**CAG interruption** — a non-CAG codon breaking the pure CAG run; affects both
+the count and HD pathology.
