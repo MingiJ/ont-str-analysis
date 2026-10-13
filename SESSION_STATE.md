@@ -611,3 +611,64 @@ For future multi-step plans, update this file after every major completed step o
   duration but did not meet the predeclared accuracy gate. Freeze the four
   samples now; do not tune ACF, calibration, boundary QC, or thresholds on
   their revealed truth.
+
+
+## 2026-10-13 Stabilization, supervisor comparisons, and Axis-1 plan
+
+- Recovered full project context by SSH to `target`; confirmed 68 algorithm unit
+  tests pass under `.venv/bin/python -m unittest discover -s src/algorithm`.
+- STABILIZATION: the entire `src/algorithm/` pipeline, its tests, the research
+  docs, the external/MASTR confirmation scripts+configs, and this file were all
+  previously UNTRACKED in git (only the paper + runner shell were committed).
+  Committed everything; gitignored the 7.1 GB `tools/` toolchains and stray
+  `*.fastq`. Reviewed and kept the in-flight fixes (python->python3 and
+  rg->bash-regex runner patches; strict `compare_ground_truth.py` rewrite that
+  adds a failure table and benchmark report; paper text matching the final
+  9-sample benchmark).
+- Reproducibility audit (all headline numbers re-derived from code/stored
+  outputs): benchmark WarpSTR 0.556/0.889, STRique 1.889/1.444, DeepRepeat 4/9
+  missed-short, 0 failures; independent duration LOSO 1.638; periodicity
+  1.414/1.725; weak RNN 5/9 resolved, candidate 5.775, resolved 4.400; Coriell
+  3.103/2.894; MASTR 3.186/5.781/4.622. All reproduce; no contradictions across
+  paper/SESSION_STATE/docs. CONFIRMED with hard provenance that the 0.556 MLP
+  draws its windows from the WarpSTR-boundary archive, so it is NOT an
+  independent win; the defensible headline is the independent duration 1.638.
+- Wrote `docs/DEFENSE_PREP.md` (panel rehearsal: honest summary, results table
+  with status column, claim/non-claim boundary, four likely panel attacks,
+  limitations, reproducibility story, mock defense over the 10 reviewer
+  questions). Updated it with the 2026-10-13 figures.
+- SUPERVISOR-REQUESTED COMPARISONS (committed): `src/algorithm/make_comparison_figures.py`
+  generates `paper/figures/panel_a_error_vs_length.png` (allele error vs repeat
+  length) and `paper/figures/panel_d_single_read_distribution.png`
+  (density-normalised per-read distributions; proposed caller DOES separate the
+  two alleles per read, addressing the ND33392 bimodality note, but with a
+  noisier long-allele mode). `paper/figures/runtime_memory_comparison.md`:
+  proposed caller measured at 2.05 s / 222 MB for full 9-fold LOSO vs
+  minutes-hours and GB-scale for the signal tools. Panel-A mean abs allele
+  error: WarpSTR 0.722, DeepRepeat 1.556, Proposed 1.638, STRique 1.667.
+- GitHub: added SSH deploy key on the VM (`~/.ssh/ont_str_deploy`, repo
+  `core.sshCommand`), switched origin to SSH, pushed `main` (was benchmark-stage
+  only). The supervisor can now see the full algorithm + figures at
+  github.com/MingiJ/ont-str-analysis.
+- Drafted the supervisor email (reports the novel algorithm + the requested
+  comparisons; asks (1) to claim his offered extra datasets now that the
+  algorithm exists, and (2) whether a rigorous non-WarpSTR-beating contribution
+  is acceptable). Ready to send; attach the two PNGs.
+- AGREED NEXT DIRECTION (Axis 1): a length-dependent "ruler". Diagnostic on
+  `repeat_duration_independent_loso_dev/folds.tsv` + the repeat-window index
+  showed samples-per-CAG varies ~29-38 and is systematically LOWER for the long
+  allele in 8/9 samples, so a single affine duration->count calibration
+  mis-extrapolates to the expansions (GM04723 72 undercalled to ~64; ND33392 57
+  overcalled to ~61). The duration-baseline error concentrates on the expanded
+  alleles (Panel A). Plan: model samples-per-CAG as a function of allele length
+  / per-read speed, measured against the frozen 1.638 gate under identical
+  nested LOSO, carrying the uncertainty/abstention layer. Uncertainty/abstention
+  is a reporting feature, not an accuracy win (within-sample separation does not
+  track error: GM04723 has the highest cluster separation AND the worst error).
+  Keep leakage discipline (no WarpSTR boundaries, no tuning on held-out truth).
+- Jeff is upskilling (genetics + nanopore physics + ML evaluation) and wants to
+  steer/judge outputs. Covered: diploid/dominant genetics, why long+short,
+  nanopore k-mer signal, repeat DURATION as the core feature, boundary
+  sensitivity (200 samples ~= 6 CAG), alignment vs move-table coordinate chain,
+  train/val/test, read-split leakage vs LOSO, data leakage, negative results.
+  Remaining: finish practising the 10-question review checklist on live results.
