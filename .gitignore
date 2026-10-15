@@ -29,3 +29,12 @@ CRISPR Cas9 Editing.pdf
 tools/
 # Stray raw sequence data in repo root
 *.fastq
+
+# Personal / internal — kept local, not shared on GitHub
+AGENTS.md
+SESSION_STATE.md
+docs/DEFENSE_PREP.md
+docs/DECISION_REVIEW_GUIDE.md
+docs/GLOSSARY.md
+docs/SESSION_PROGRESS_REPORT.md
+docs/BENCHMARK_RERUN_STATE.md
